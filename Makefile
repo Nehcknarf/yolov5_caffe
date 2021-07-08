@@ -178,7 +178,7 @@ ifneq ($(CPU_ONLY), 1)
 	LIBRARIES := cudart cublas curand
 endif
 
-LIBRARIES += glog gflags protobuf boost_system boost_filesystem m
+LIBRARIES += glog gflags protobuf boost_system boost_filesystem m hdf5_serial_hl hdf5_serial opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs
 
 # handle IO dependencies
 USE_LEVELDB ?= 1
@@ -261,6 +261,7 @@ endif
 # Linux
 ifeq ($(LINUX), 1)
 	CXX ?= /usr/bin/g++
+	CXXFLAGS += -std=c++11
 	GCCVERSION := $(shell $(CXX) -dumpversion | cut -f1,2 -d.)
 	# older versions of gcc are too dumb to build boost with -Wuninitalized
 	ifeq ($(shell echo | awk '{exit $(GCCVERSION) < 4.6;}'), 1)
@@ -268,7 +269,8 @@ ifeq ($(LINUX), 1)
 	endif
 	# boost::thread is reasonably called boost_thread (compare OS X)
 	# We will also explicitly add stdc++ to the link target.
-	LIBRARIES += boost_thread stdc++
+# 	LIBRARIES += boost_thread stdc++
+	LIBRARIES += boost_thread stdc++ boost_regex
 	VERSIONFLAGS += -Wl,-soname,$(DYNAMIC_VERSIONED_NAME_SHORT) -Wl,-rpath,$(ORIGIN)/../lib
 endif
 
